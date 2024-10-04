@@ -24,14 +24,8 @@ jobs:
           distribution: 'temurin'
           check-latest: true
 
-      - name: Set up SonarScanner environment
-        run: |
-          export JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17*/x64
-          export PATH="$JAVA_HOME/bin:$PATH"
-          java -version  # Ensure Java 17 is being used
-
       - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@v1
+        uses: sonarsource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
