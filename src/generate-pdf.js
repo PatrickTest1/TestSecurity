@@ -5,16 +5,13 @@ function generatePDF(reportData, outputPath) {
   const doc = new PDFDocument({ margin: 50 });
   doc.pipe(fs.createWriteStream(outputPath));
 
-  // Titre
   doc.fontSize(20).text('Trufflehog Vulnerabilities Report', { align: 'center' });
   doc.moveDown();
 
   reportData.forEach((entry, index) => {
-    // Section pour chaque vulnérabilité
     doc.fontSize(16).text(`Vulnérabilité ${index + 1}`, { underline: true });
     doc.moveDown(0.5);
 
-    // Informations Générales
     doc.fontSize(12).text(`- Branche : ${entry.branch}`);
     doc.text(`- Commit : ${entry.commit}`);
     doc.text(`- Hash du Commit : ${entry.commitHash}`);
@@ -22,7 +19,8 @@ function generatePDF(reportData, outputPath) {
     doc.moveDown();
 
     // Détails du Diff
-    doc.fontSize(14).text('Détails du Diff:', { bold: true });
+    doc.fontSize(14).text('Détails du Diff:', { bold: true, underline: true });
+    doc.moveDown(0.5);
     doc.font('Courier').fontSize(10).text(entry.diff, { continued: false });
     doc.moveDown();
 
