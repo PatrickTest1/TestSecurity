@@ -1,3 +1,5 @@
+// src/generate-pdf.js
+
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
 
@@ -12,5 +14,11 @@ function generatePDF(reportData, outputPath) {
   doc.end();
 }
 
-const reportData = fs.readFileSync('trufflehog-output.json', 'utf8');
-generatePDF(reportData, 'trufflehog-report.pdf');
+try {
+  const reportData = fs.readFileSync('trufflehog-output.json', 'utf8');
+  generatePDF(reportData, 'trufflehog-report.pdf');
+  console.log('PDF report generated successfully.');
+} catch (error) {
+  console.error('Error generating PDF:', error);
+  process.exit(1); // Assurez-vous que le workflow échoue en cas d'erreur
+}

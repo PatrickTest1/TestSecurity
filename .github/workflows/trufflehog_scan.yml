@@ -42,8 +42,8 @@ jobs:
       # Étape 5: Exécuter TruffleHog et générer le rapport JSON
       - name: Run TruffleHog
         run: |
-          trufflehog --json . > src/trufflehog-output.json
-        # Utilisez le chemin relatif correct vers le dossier src
+          trufflehog --json . > trufflehog-output.json
+        # Écriture du fichier JSON à la racine
 
       # Étape 6: Générer le rapport PDF
       - name: Generate PDF Report
@@ -61,4 +61,4 @@ jobs:
       # Étape Optionnelle: Nettoyer les fichiers sensibles après l'envoi
       - name: Cleanup Reports
         run: |
-          rm src/trufflehog-output.json src/trufflehog-report.pdf
+          rm trufflehog-output.json trufflehog-report.pdf
