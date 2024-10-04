@@ -36,9 +36,9 @@ jobs:
 
       - name: Run TruffleHog
         run: |
-          trufflehog --json . > trufflehog-output.json || true
+          trufflehog --json https://github.com/PatrickTest1/TestSecurity.git > trufflehog-output.json 
         # Ou utilisez continue-on-error
-        # continue-on-error: true
+        continue-on-error: true
 
       - name: Generate PDF Report
         run: |
