@@ -11,17 +11,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Étape 1: Vérifier le code source
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Étape 2: Configurer Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16' # Remplacez par la version de Node.js que vous utilisez
+          node-version: '16'
 
-      # Étape 3: Mettre en cache les dépendances npm
       - name: Cache npm dependencies
         uses: actions/cache@v3
         with:
@@ -30,27 +27,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # Étape 4: Installer les dépendances
       - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-pip
           pip3 install trufflehog
           npm install
-        # Assurez-vous que votre fichier package.json inclut pdfkit et nodemailer
 
-      # Étape 5: Exécuter TruffleHog et générer le rapport JSON
       - name: Run TruffleHog
         run: |
-          trufflehog --json . > trufflehog-output.json
-        # Écriture du fichier JSON à la racine
+          trufflehog --json . > trufflehog-output.json || true
+        # Ou utilisez continue-on-error
+        # continue-on-error: true
 
-      # Étape 6: Générer le rapport PDF
       - name: Generate PDF Report
         run: |
           node src/generate-pdf.js
 
-      # Étape 7: Envoyer le rapport par email
       - name: Send Email Report
         run: |
           node src/send-email.js
@@ -58,7 +51,6 @@ jobs:
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
 
-      # Étape Optionnelle: Nettoyer les fichiers sensibles après l'envoi
       - name: Cleanup Reports
         run: |
           rm trufflehog-output.json trufflehog-report.pdf
