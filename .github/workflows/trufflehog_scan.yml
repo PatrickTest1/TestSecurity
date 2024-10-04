@@ -76,4 +76,10 @@ jobs:
       # Étape Optionnelle: Nettoyer les fichiers sensibles après l'envoi
       - name: Cleanup Reports
         run: |
-          rm trufflehog-output.json trufflehog-report.pdf
+          if [ -f trufflehog-output.json ]; then
+            rm trufflehog-output.json
+          fi
+          if [ -f trufflehog-report.pdf ]; then
+            rm trufflehog-report.pdf
+          fi
+
