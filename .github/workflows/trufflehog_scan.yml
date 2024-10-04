@@ -1,31 +1,64 @@
 name: Trufflehog Scan and Email Report
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   trufflehog:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
 
+    steps:
+      # Étape 1: Vérifier le code source
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Étape 2: Configurer Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16' # Remplacez par la version de Node.js que vous utilisez
+
+      # Étape 3: Mettre en cache les dépendances npm
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # Étape 4: Installer les dépendances
       - name: Install Dependencies
         run: |
-          sudo apt-get install python3-pip
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
           pip3 install trufflehog
-          npm install pdfkit nodemailer
+          npm install
+        # Assurez-vous que votre fichier package.json inclut pdfkit et nodemailer
 
-      - name: Run Trufflehog
+      # Étape 5: Exécuter TruffleHog et générer le rapport JSON
+      - name: Run TruffleHog
         run: |
-          trufflehog --json https://github.com/PatrickTest1/TestSecurity.git > ../src/trufflehog-output.json
+          trufflehog --json . > src/trufflehog-output.json
+        # Utilisez le chemin relatif correct vers le dossier src
 
+      # Étape 6: Générer le rapport PDF
       - name: Generate PDF Report
         run: |
-          node ../src/generate-pdf.js
+          node src/generate-pdf.js
 
+      # Étape 7: Envoyer le rapport par email
       - name: Send Email Report
         run: |
-          node  ../src/send-email.js
+          node src/send-email.js
         env:
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
 
+      # Étape Optionnelle: Nettoyer les fichiers sensibles après l'envoi
+      - name: Cleanup Reports
+        run: |
+          rm src/trufflehog-output.json src/trufflehog-report.pdf
