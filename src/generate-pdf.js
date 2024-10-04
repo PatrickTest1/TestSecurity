@@ -18,18 +18,15 @@ function generatePDF(reportData, outputPath) {
     doc.text(`- Date : ${entry.date}`);
     doc.moveDown();
 
-    // Détails du Diff
     doc.fontSize(14).text('Détails du Diff:', { bold: true, underline: true });
     doc.moveDown(0.5);
     doc.font('Courier').fontSize(10).text(entry.diff, { continued: false });
     doc.moveDown();
 
-    // Raison
     doc.fontSize(14).text('Raison :', { bold: true });
     doc.font('Helvetica').fontSize(12).text(entry.reason);
     doc.moveDown();
 
-    // Chaînes Trouvées
     doc.fontSize(14).text('Chaînes Trouvées :', { bold: true });
     entry.stringsFound.forEach(str => {
       doc.font('Helvetica').fontSize(12).text(`• ${str}`);
@@ -44,7 +41,6 @@ try {
   const rawData = fs.readFileSync('trufflehog-output.json', 'utf8');
   let jsonData;
 
-  // Trufflehog peut retourner un seul objet ou un tableau
   try {
     jsonData = JSON.parse(rawData);
   } catch (parseError) {
@@ -53,12 +49,11 @@ try {
     process.exit(1);
   }
 
-  // Assurez-vous que jsonData est toujours un tableau
   const reportData = Array.isArray(jsonData) ? jsonData : [jsonData];
 
   generatePDF(reportData, 'trufflehog-report.pdf');
   console.log('PDF report generated successfully.');
 } catch (error) {
   console.error('Error generating PDF:', error);
-  process.exit(1); // Assurez-vous que le workflow échoue en cas d'erreur
+  process.exit(1);
 }

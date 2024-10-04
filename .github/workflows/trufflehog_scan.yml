@@ -11,17 +11,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Étape 1: Vérifier le code source
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Étape 2: Configurer Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16' # Remplacez par la version de Node.js que vous utilisez
+          node-version: '18'
 
-      # Étape 3: Mettre en cache les dépendances npm
       - name: Cache npm dependencies
         uses: actions/cache@v3
         with:
@@ -30,23 +27,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # Étape 4: Installer les dépendances
       - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-pip
           pip3 install trufflehog
           npm install
-        # Assurez-vous que votre fichier package.json inclut pdfkit et nodemailer
 
-      # Étape 5: Exécuter TruffleHog et générer le rapport JSON
       - name: Run TruffleHog
         run: |
           trufflehog --json . > trufflehog-output.json
         continue-on-error: true
-        # Continue même si TruffleHog détecte des vulnérabilités
 
-      # Étape 6: Vérifier s'il y a des vulnérabilités détectées
       - name: Check for Vulnerabilities
         id: check_vuln
         run: |
@@ -58,13 +50,11 @@ jobs:
             echo "has_vuln=false" >> $GITHUB_ENV
           fi
 
-      # Étape 7: Générer le rapport PDF (seulement si des vulnérabilités sont détectées)
       - name: Generate PDF Report
         if: env.has_vuln == 'true'
         run: |
           node src/generate-pdf.js
 
-      # Étape 8: Envoyer le rapport par email (seulement si des vulnérabilités sont détectées)
       - name: Send Email Report
         if: env.has_vuln == 'true'
         run: |
@@ -73,7 +63,6 @@ jobs:
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
 
-      # Étape Optionnelle: Nettoyer les fichiers sensibles après l'envoi
       - name: Cleanup Reports
         run: |
           if [ -f trufflehog-output.json ]; then
@@ -82,4 +71,3 @@ jobs:
           if [ -f trufflehog-report.pdf ]; then
             rm trufflehog-report.pdf
           fi
-
