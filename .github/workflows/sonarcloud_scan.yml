@@ -30,3 +30,4 @@ jobs:
             -Dsonar.projectKey=PatrickTest1_TestSecurity \
             -Dsonar.organization=PatrickTest1 \
             -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.sources=../src \
