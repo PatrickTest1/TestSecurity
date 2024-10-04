@@ -42,7 +42,7 @@ jobs:
       # Étape 5: Exécuter TruffleHog et générer le rapport JSON
       - name: Run TruffleHog
         run: |
-          trufflehog --json --depth 1 . > trufflehog-output.json
+          trufflehog --json . > trufflehog-output.json
         continue-on-error: true
         # Continue même si TruffleHog détecte des vulnérabilités
 
