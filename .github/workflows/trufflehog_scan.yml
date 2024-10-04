@@ -1,0 +1,31 @@
+name: Trufflehog Scan and Email Report
+
+on: [push, pull_request]
+
+jobs:
+  trufflehog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get install python3-pip
+          pip3 install trufflehog
+          npm install pdfkit nodemailer
+
+      - name: Run Trufflehog
+        run: |
+          trufflehog --json https://github.com/PatrickTest1/TestSecurity.git > ../src/trufflehog-output.json
+
+      - name: Generate PDF Report
+        run: |
+          node ../src/generate-pdf.js
+
+      - name: Send Email Report
+        run: |
+          node  ../src/send-email.js
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+
