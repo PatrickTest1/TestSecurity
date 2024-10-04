@@ -2,31 +2,39 @@ const fs = require('fs');
 const PDFDocument = require('pdfkit');
 
 function generatePDF(reportData, outputPath) {
-  const doc = new PDFDocument();
+  const doc = new PDFDocument({ margin: 50 });
   doc.pipe(fs.createWriteStream(outputPath));
 
+  // Titre
   doc.fontSize(20).text('Trufflehog Vulnerabilities Report', { align: 'center' });
   doc.moveDown();
 
   reportData.forEach((entry, index) => {
+    // Section pour chaque vulnérabilité
     doc.fontSize(16).text(`Vulnérabilité ${index + 1}`, { underline: true });
+    doc.moveDown(0.5);
+
+    // Informations Générales
     doc.fontSize(12).text(`- Branche : ${entry.branch}`);
     doc.text(`- Commit : ${entry.commit}`);
     doc.text(`- Hash du Commit : ${entry.commitHash}`);
     doc.text(`- Date : ${entry.date}`);
     doc.moveDown();
 
-    doc.text('Détails du Diff:', { bold: true });
-    doc.font('Courier').text(entry.diff);
+    // Détails du Diff
+    doc.fontSize(14).text('Détails du Diff:', { bold: true });
+    doc.font('Courier').fontSize(10).text(entry.diff, { continued: false });
     doc.moveDown();
 
-    doc.text('Raison :', { bold: true });
-    doc.text(entry.reason);
+    // Raison
+    doc.fontSize(14).text('Raison :', { bold: true });
+    doc.font('Helvetica').fontSize(12).text(entry.reason);
     doc.moveDown();
 
-    doc.text('Chaînes Trouvées :', { bold: true });
+    // Chaînes Trouvées
+    doc.fontSize(14).text('Chaînes Trouvées :', { bold: true });
     entry.stringsFound.forEach(str => {
-      doc.text(`• ${str}`);
+      doc.font('Helvetica').fontSize(12).text(`• ${str}`);
     });
     doc.addPage();
   });
@@ -36,9 +44,17 @@ function generatePDF(reportData, outputPath) {
 
 try {
   const rawData = fs.readFileSync('trufflehog-output.json', 'utf8');
-  const jsonData = JSON.parse(rawData);
+  let jsonData;
 
-  // Trufflehog peut retourner un objet ou un tableau en fonction de la version
+  // Trufflehog peut retourner un seul objet ou un tableau
+  try {
+    jsonData = JSON.parse(rawData);
+  } catch (parseError) {
+    console.error('JSON parsing error:', parseError);
+    console.error('Raw Trufflehog output:', rawData);
+    process.exit(1);
+  }
+
   // Assurez-vous que jsonData est toujours un tableau
   const reportData = Array.isArray(jsonData) ? jsonData : [jsonData];
 
