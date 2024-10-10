@@ -6,6 +6,7 @@
         "send-email": "node src/send-email.js"
     },
     "dependencies": {
+        "crypto": "^1.0.1",
         "dotenv": "^16.4.5",
         "nodemailer": "^6.9.15",
         "pdfkit": "^0.13.0"
