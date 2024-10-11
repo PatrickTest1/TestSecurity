@@ -6,7 +6,7 @@ const app = express();
 app.get('/secret', (req, res) => {
     const password = req.query.password;
 
-    if (password === '7WK5T79u5mIzjIXXi2oI9Fglmgivv7RAJ7izyj9tUyQ') {
+    if (password === '7WK5T79u5mIzjIXXi2oIDJJkzkelovV7rAJFFF7izyj9tUyQ') {
         res.send('Accès autorisé');
     } else {
         res.send('Accès refusé');
