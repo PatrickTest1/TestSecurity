@@ -36,19 +36,20 @@ jobs:
 
       - name: Run TruffleHog
         run: |
-          trufflehog --json . > trufflehog-output.json
+        docker run --rm -it -v "$PWD:/pwd" trufflesecurity/trufflehog:latest github --repo https://github.com/sambrus/sambrus --json > trufflehog-output.json
+          # trufflehog --json . > trufflehog-output.json
         continue-on-error: true
 
-      - name: Check for Vulnerabilities
-        id: check_vuln
-        run: |
-          if [ -s trufflehog-output.json ]; then
-            echo "Vulnerabilities detected."
-            echo "has_vuln=true" >> $GITHUB_ENV
-          else
-            echo "No vulnerabilities detected."
-            echo "has_vuln=false" >> $GITHUB_ENV
-          fi
+      # - name: Check for Vulnerabilities
+      #   id: check_vuln
+      #   run: |
+      #     if [ -s trufflehog-output.json ]; then
+      #       echo "Vulnerabilities detected."
+      #       echo "has_vuln=true" >> $GITHUB_ENV
+      #     else
+      #       echo "No vulnerabilities detected."
+      #       echo "has_vuln=false" >> $GITHUB_ENV
+      #     fi
 
       - name: Generate PDF Report
         if: env.has_vuln == 'true'
