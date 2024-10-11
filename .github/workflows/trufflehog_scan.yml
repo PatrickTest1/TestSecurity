@@ -36,7 +36,7 @@ jobs:
 
       - name: Run TruffleHog
         run: |
-          docker run --rm -it -v "$PWD:/pwd" trufflesecurity/trufflehog:latest github --repo https://github.com/sambrus/sambrus --json > trufflehog-output.json
+          docker run --rm -v "$PWD:/pwd" trufflesecurity/trufflehog:latest github --repo https://github.com/sambrus/sambrus --json > trufflehog-output.json
           # trufflehog --json . > trufflehog-output.json
         continue-on-error: true
 
@@ -52,12 +52,12 @@ jobs:
       #     fi
 
       - name: Generate PDF Report
-        if: env.has_vuln == 'true'
+        # if: env.has_vuln == 'true'
         run: |
           node src/generate-pdf.js
 
       - name: Send Email Report
-        if: env.has_vuln == 'true'
+        # if: env.has_vuln == 'true'
         run: |
           node src/send-email.js
         env:
